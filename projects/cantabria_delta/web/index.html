@@ -46,9 +46,7 @@
 		.controls label { font-weight: 600; font-size: 0.875rem; }
 		.controls input[type=range] { cursor: pointer; }
 		.info-text { font-size: 0.875rem; color: var(--muted); margin-top: 12px; }
-		.slider-after { position: absolute; top: 0; left: 0; width: 50%; height: 100%; overflow: hidden; }
-		.slider-after img { width: 100%; height: 100%; object-fit: contain; }
-		.slider-divider { position: absolute; top: 0; bottom: 0; width: 3px; background: white; left: 50%; cursor: ew-resize; box-shadow: 0 0 0 1px rgba(0,0,0,0.15); }
+
 		.attribution { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(15, 23, 42, 0.06); color: #94a3b8; font-size: 0.875rem; line-height: 1.6; }
 		.attribution a { color: #64748b; text-decoration: underline; }
 		@media (max-width: 760px) {
@@ -75,8 +73,7 @@
 			<div class="control-group">
 				<label class="control-label">Comparison Type</label>
 				<div class="button-row">
-					<button class="button secondary active" onclick="setMode('slider')" data-mode="slider">Slider</button>
-					<button class="button secondary" onclick="setMode('opacity')" data-mode="opacity">Opacity</button>
+					<button class="button secondary active" onclick="setMode('opacity')" data-mode="opacity">Opacity</button>
 					<button class="button secondary" onclick="setMode('grid')" data-mode="grid">Grid</button>
 					<button class="button secondary" onclick="setMode('timelapse')" data-mode="timelapse">Timelapse</button>
 				</div>
@@ -101,12 +98,7 @@
 		
 		<div class="viewer-panel">
 			<div class="viewer-wrapper" id="viewer">
-				<div id="slider-mode">
-					<img id="slider-before-img" src="" alt="Before" style="width: 100%; height: 100%; object-fit: contain;">
-					<div class="slider-after"><img id="slider-after-img" src="" alt="After" style="width: 100%; height: 100%; object-fit: contain;"></div>
-					<div class="slider-divider" id="slider-divider" style="transform: translateX(-50%);"></div>
-				</div>
-				<div id="opacity-mode" style="display: none; position: relative; width: 100%; height: 100%;">
+				<div id="opacity-mode" style="position: relative; width: 100%; height: 100%;">
 					<img id="opacity-base-img" src="" alt="Base" style="width: 100%; height: 100%; object-fit: contain;">
 					<img id="opacity-overlay-img" src="" alt="Overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.5;">
 				</div>
@@ -114,11 +106,7 @@
 				<img id="timelapse-img" src="" alt="Timelapse" style="display: none; width: 100%; height: 100%; object-fit: contain;">
 			</div>
 			
-			<div id="slider-controls" class="controls">
-				<label>Position <input id="slider-pos" type="range" min="0" max="100" value="50" onchange="updateSliderPos()"></label>
-			</div>
-			
-			<div id="opacity-controls" class="controls" style="display: none;">
+			<div id="opacity-controls" class="controls">
 				<label>Opacity <input id="opacity-value" type="range" min="0" max="100" value="50" onchange="updateOpacity()"></label>
 			</div>
 			
@@ -137,7 +125,7 @@
 	<script>
 		const imageData = {"Oyambre": {"images": [{"year": 1946, "service": "ortofoto-45-46", "path": "../data/images/cantabria-delta-oyambre__1946__ortofoto-45-46__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 1956, "service": "ortofoto-56-57", "path": "../data/images/cantabria-delta-oyambre__1956__ortofoto-56-57__layer0__epsg-25830__oyambre__391468-764-4802445-188-394216-075-4804825-562__1600x1200.png", "site": "oyambre"}, {"year": 1957, "service": "ortofoto-56-57", "path": "../data/images/cantabria-delta-oyambre__1957__ortofoto-56-57__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 1980, "service": "ortofoto-80-90", "path": "../data/images/cantabria-delta-oyambre__1980__ortofoto-80-90__layer0__epsg-25830__oyambre__391468-764-4802445-188-394216-075-4804825-562__1600x1200.png", "site": "oyambre"}, {"year": 1980, "service": "ortofoto-80-90", "path": "../data/images/cantabria-delta-oyambre__1980__ortofoto-80-90__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 1986, "service": "ortofoto-77-86", "path": "../data/images/cantabria-delta-oyambre__1986__ortofoto-77-86__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2000, "service": "ortofoto-2001", "path": "../data/images/cantabria-delta-oyambre__2000__ortofoto-2001__layer0__epsg-25830__oyambre__391468-764-4802445-188-394216-075-4804825-562__1600x1200.png", "site": "oyambre"}, {"year": 2001, "service": "ortofoto-2001", "path": "../data/images/cantabria-delta-oyambre__2001__ortofoto-2001__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2002, "service": "ortofoto-2002", "path": "../data/images/cantabria-delta-oyambre__2002__ortofoto-2002__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2005, "service": "ortofoto-2005", "path": "../data/images/cantabria-delta-oyambre__2005__ortofoto-2005__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2007, "service": "ortofoto-2007", "path": "../data/images/cantabria-delta-oyambre__2007__ortofoto-2007__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2010, "service": "ortofoto-2010", "path": "../data/images/cantabria-delta-oyambre__2010__ortofoto-2010__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2014, "service": "ortofoto-2014", "path": "../data/images/cantabria-delta-oyambre__2014__ortofoto-2014__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2017, "service": "ortofoto-2017", "path": "../data/images/cantabria-delta-oyambre__2017__ortofoto-2017__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2018, "service": "ortofoto-2018", "path": "../data/images/cantabria-delta-oyambre__2018__ortofoto-2018__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2020, "service": "ortofoto-2020", "path": "../data/images/cantabria-delta-oyambre__2020__ortofoto-2020__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2023, "service": "ortofoto-2023", "path": "../data/images/cantabria-delta-oyambre__2023__ortofoto-2023__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2024, "service": "ortofoto-2024", "path": "../data/images/cantabria-delta-oyambre__2024__ortofoto-2024__layer0__epsg-25830__oyambre__391468-764-4802445-188-394216-075-4804825-562__1600x1200.png", "site": "oyambre"}, {"year": 2024, "service": "ortofoto-2024", "path": "../data/images/cantabria-delta-oyambre__2024__ortofoto-2024__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}, {"year": 2025, "service": "ortofoto-2025", "path": "../data/images/cantabria-delta-oyambre__2025__ortofoto-2025__layer0__epsg-25830__oyambre__391468.764-4802445.188-394216.075-4804825.562__1600x1200.png", "site": "oyambre"}]}, "Santander": {"images": [{"year": 1946, "service": "ortofoto-45-46", "path": "../data/images/cantabria-delta-santander__1946__ortofoto-45-46__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 1956, "service": "ortofoto-56-57", "path": "../data/images/cantabria-delta-santander__1956__ortofoto-56-57__layer0__epsg-25830__santander__438207-351-4808859-947-441318-857-4811288-285__1600x1200.png", "site": "santander"}, {"year": 1957, "service": "ortofoto-56-57", "path": "../data/images/cantabria-delta-santander__1957__ortofoto-56-57__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 1980, "service": "ortofoto-80-90", "path": "../data/images/cantabria-delta-santander__1980__ortofoto-80-90__layer0__epsg-25830__santander__438207-351-4808859-947-441318-857-4811288-285__1600x1200.png", "site": "santander"}, {"year": 1980, "service": "ortofoto-80-90", "path": "../data/images/cantabria-delta-santander__1980__ortofoto-80-90__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 1986, "service": "ortofoto-77-86", "path": "../data/images/cantabria-delta-santander__1986__ortofoto-77-86__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2000, "service": "ortofoto-2001", "path": "../data/images/cantabria-delta-santander__2000__ortofoto-2001__layer0__epsg-25830__santander__438207-351-4808859-947-441318-857-4811288-285__1600x1200.png", "site": "santander"}, {"year": 2001, "service": "ortofoto-2001", "path": "../data/images/cantabria-delta-santander__2001__ortofoto-2001__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2002, "service": "ortofoto-2002", "path": "../data/images/cantabria-delta-santander__2002__ortofoto-2002__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2005, "service": "ortofoto-2005", "path": "../data/images/cantabria-delta-santander__2005__ortofoto-2005__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2007, "service": "ortofoto-2007", "path": "../data/images/cantabria-delta-santander__2007__ortofoto-2007__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2010, "service": "ortofoto-2010", "path": "../data/images/cantabria-delta-santander__2010__ortofoto-2010__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2014, "service": "ortofoto-2014", "path": "../data/images/cantabria-delta-santander__2014__ortofoto-2014__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2017, "service": "ortofoto-2017", "path": "../data/images/cantabria-delta-santander__2017__ortofoto-2017__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2018, "service": "ortofoto-2018", "path": "../data/images/cantabria-delta-santander__2018__ortofoto-2018__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2020, "service": "ortofoto-2020", "path": "../data/images/cantabria-delta-santander__2020__ortofoto-2020__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2023, "service": "ortofoto-2023", "path": "../data/images/cantabria-delta-santander__2023__ortofoto-2023__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2024, "service": "ortofoto-2024", "path": "../data/images/cantabria-delta-santander__2024__ortofoto-2024__layer0__epsg-25830__santander__438207-351-4808859-947-441318-857-4811288-285__1600x1200.png", "site": "santander"}, {"year": 2024, "service": "ortofoto-2024", "path": "../data/images/cantabria-delta-santander__2024__ortofoto-2024__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}, {"year": 2025, "service": "ortofoto-2025", "path": "../data/images/cantabria-delta-santander__2025__ortofoto-2025__layer0__epsg-25830__santander__438207.351-4808859.947-441318.857-4811288.285__1600x1200.png", "site": "santander"}]}};
 		let currentSite = null;
-		let currentMode = 'slider';
+		let currentMode = 'opacity';
 		let timelapseTimer = null;
 		
 		function init() {
@@ -181,17 +169,15 @@
 			pauseTimelapse();
 			document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
 			document.querySelector(`[data-mode="${m}"]`).classList.add('active');
-			document.getElementById('slider-mode').style.display = m === 'slider' ? 'block' : 'none';
 			document.getElementById('opacity-mode').style.display = m === 'opacity' ? 'block' : 'none';
 			document.getElementById('grid-mode').style.display = m === 'grid' ? 'block' : 'none';
 			document.getElementById('timelapse-img').style.display = m === 'timelapse' ? 'block' : 'none';
-			document.getElementById('slider-controls').style.display = m === 'slider' ? 'grid' : 'none';
 			document.getElementById('opacity-controls').style.display = m === 'opacity' ? 'grid' : 'none';
-			document.getElementById('year-selection').style.display = (m === 'slider' || m === 'opacity') ? 'block' : 'none';
+			document.getElementById('year-selection').style.display = m === 'opacity' ? 'block' : 'none';
 			document.getElementById('timelapse-controls').style.display = m === 'timelapse' ? 'block' : 'none';
 			if (m === 'grid') buildGrid();
 			else if (m === 'timelapse') initTimelapse();
-			else updateComparison();
+			else if (m === 'opacity') updateOpacity();
 		}
 		
 		function getImg(year) {
@@ -200,26 +186,7 @@
 		}
 		
 		function updateComparison() {
-			if (currentMode === 'slider') updateSlider();
-			else if (currentMode === 'opacity') updateOpacity();
-		}
-		
-		function updateSlider() {
-			const start = Number(document.getElementById('year-start').value);
-			const end = Number(document.getElementById('year-end').value);
-			const b = getImg(start), a = getImg(end);
-			if (b && a) {
-				document.getElementById('slider-before-img').src = b.path;
-				document.getElementById('slider-after-img').src = a.path;
-				document.getElementById('viewer-info').textContent = `${start} ← → ${end}`;
-				updateSliderPos();
-			}
-		}
-		
-		function updateSliderPos() {
-			const v = document.getElementById('slider-pos').value;
-			document.getElementById('slider-after-img').parentElement.style.width = v + '%';
-			document.getElementById('slider-divider').style.left = v + '%';
+			if (currentMode === 'opacity') updateOpacity();
 		}
 		
 		function updateOpacity() {

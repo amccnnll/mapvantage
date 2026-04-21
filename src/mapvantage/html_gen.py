@@ -686,9 +686,7 @@ def build_single_page_app(
 		.controls label {{ font-weight: 600; font-size: 0.875rem; }}
 		.controls input[type=range] {{ cursor: pointer; }}
 		.info-text {{ font-size: 0.875rem; color: var(--muted); margin-top: 12px; }}
-		.slider-after {{ position: absolute; top: 0; left: 0; width: 50%; height: 100%; overflow: hidden; }}
-		.slider-after img {{ width: 100%; height: 100%; object-fit: contain; }}
-		.slider-divider {{ position: absolute; top: 0; bottom: 0; width: 3px; background: white; left: 50%; cursor: ew-resize; box-shadow: 0 0 0 1px rgba(0,0,0,0.15); }}
+
 		.attribution {{ margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(15, 23, 42, 0.06); color: #94a3b8; font-size: 0.875rem; line-height: 1.6; }}
 		.attribution a {{ color: #64748b; text-decoration: underline; }}
 		@media (max-width: 760px) {{
@@ -715,8 +713,7 @@ def build_single_page_app(
 			<div class="control-group">
 				<label class="control-label">Comparison Type</label>
 				<div class="button-row">
-					<button class="button secondary active" onclick="setMode('slider')" data-mode="slider">Slider</button>
-					<button class="button secondary" onclick="setMode('opacity')" data-mode="opacity">Opacity</button>
+					<button class="button secondary active" onclick="setMode('opacity')" data-mode="opacity">Opacity</button>
 					<button class="button secondary" onclick="setMode('grid')" data-mode="grid">Grid</button>
 					<button class="button secondary" onclick="setMode('timelapse')" data-mode="timelapse">Timelapse</button>
 				</div>
@@ -741,12 +738,7 @@ def build_single_page_app(
 		
 		<div class="viewer-panel">
 			<div class="viewer-wrapper" id="viewer">
-				<div id="slider-mode">
-					<img id="slider-before-img" src="" alt="Before" style="width: 100%; height: 100%; object-fit: contain;">
-					<div class="slider-after"><img id="slider-after-img" src="" alt="After" style="width: 100%; height: 100%; object-fit: contain;"></div>
-					<div class="slider-divider" id="slider-divider" style="transform: translateX(-50%);"></div>
-				</div>
-				<div id="opacity-mode" style="display: none; position: relative; width: 100%; height: 100%;">
+				<div id="opacity-mode" style="position: relative; width: 100%; height: 100%;">
 					<img id="opacity-base-img" src="" alt="Base" style="width: 100%; height: 100%; object-fit: contain;">
 					<img id="opacity-overlay-img" src="" alt="Overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.5;">
 				</div>
@@ -754,11 +746,7 @@ def build_single_page_app(
 				<img id="timelapse-img" src="" alt="Timelapse" style="display: none; width: 100%; height: 100%; object-fit: contain;">
 			</div>
 			
-			<div id="slider-controls" class="controls">
-				<label>Position <input id="slider-pos" type="range" min="0" max="100" value="50" onchange="updateSliderPos()"></label>
-			</div>
-			
-			<div id="opacity-controls" class="controls" style="display: none;">
+			<div id="opacity-controls" class="controls">
 				<label>Opacity <input id="opacity-value" type="range" min="0" max="100" value="50" onchange="updateOpacity()"></label>
 			</div>
 			
@@ -777,7 +765,7 @@ def build_single_page_app(
 	<script>
 		const imageData = {image_data};
 		let currentSite = null;
-		let currentMode = 'slider';
+		let currentMode = 'opacity';
 		let timelapseTimer = null;
 		
 		function init() {{
@@ -821,17 +809,15 @@ def build_single_page_app(
 			pauseTimelapse();
 			document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
 			document.querySelector(`[data-mode="${{m}}"]`).classList.add('active');
-			document.getElementById('slider-mode').style.display = m === 'slider' ? 'block' : 'none';
 			document.getElementById('opacity-mode').style.display = m === 'opacity' ? 'block' : 'none';
 			document.getElementById('grid-mode').style.display = m === 'grid' ? 'block' : 'none';
 			document.getElementById('timelapse-img').style.display = m === 'timelapse' ? 'block' : 'none';
-			document.getElementById('slider-controls').style.display = m === 'slider' ? 'grid' : 'none';
 			document.getElementById('opacity-controls').style.display = m === 'opacity' ? 'grid' : 'none';
-			document.getElementById('year-selection').style.display = (m === 'slider' || m === 'opacity') ? 'block' : 'none';
+			document.getElementById('year-selection').style.display = m === 'opacity' ? 'block' : 'none';
 			document.getElementById('timelapse-controls').style.display = m === 'timelapse' ? 'block' : 'none';
 			if (m === 'grid') buildGrid();
 			else if (m === 'timelapse') initTimelapse();
-			else updateComparison();
+			else if (m === 'opacity') updateOpacity();
 		}}
 		
 		function getImg(year) {{
@@ -840,26 +826,7 @@ def build_single_page_app(
 		}}
 		
 		function updateComparison() {{
-			if (currentMode === 'slider') updateSlider();
-			else if (currentMode === 'opacity') updateOpacity();
-		}}
-		
-		function updateSlider() {{
-			const start = Number(document.getElementById('year-start').value);
-			const end = Number(document.getElementById('year-end').value);
-			const b = getImg(start), a = getImg(end);
-			if (b && a) {{
-				document.getElementById('slider-before-img').src = b.path;
-				document.getElementById('slider-after-img').src = a.path;
-				document.getElementById('viewer-info').textContent = `${{start}} ← → ${{end}}`;
-				updateSliderPos();
-			}}
-		}}
-		
-		function updateSliderPos() {{
-			const v = document.getElementById('slider-pos').value;
-			document.getElementById('slider-after-img').parentElement.style.width = v + '%';
-			document.getElementById('slider-divider').style.left = v + '%';
+			if (currentMode === 'opacity') updateOpacity();
 		}}
 		
 		function updateOpacity() {{
