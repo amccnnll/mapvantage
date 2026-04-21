@@ -737,20 +737,28 @@ def build_single_page_app(
 		</div>
 		
 		<div class="viewer-panel">
-			<div class="viewer-wrapper" id="viewer">
+			<div class="viewer-wrapper" id="viewer-wrapper">
 				<div id="opacity-mode" style="position: relative; width: 100%; height: 100%;">
 					<img id="opacity-base-img" src="" alt="Base" style="width: 100%; height: 100%; object-fit: contain;">
 					<img id="opacity-overlay-img" src="" alt="Overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.5;">
 				</div>
-				<div id="grid-mode" style="display: none;"></div>
-				<img id="timelapse-img" src="" alt="Timelapse" style="display: none; width: 100%; height: 100%; object-fit: contain;">
+				<div id="timelapse-mode" style="display: none; position: relative; width: 100%; height: 100%;">
+					<img id="tl-img-a" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; position: absolute; transition: opacity 0.5s ease;">
+					<img id="tl-img-b" src="" alt="" style="width: 100%; height: 100%; object-fit: contain; position: absolute; opacity: 0; transition: opacity 0.5s ease;">
+				</div>
 			</div>
+			<div id="grid-mode" style="display: none; margin-top: 12px;"></div>
 			
 			<div id="opacity-controls" class="controls">
-				<label>Opacity <input id="opacity-value" type="range" min="0" max="100" value="50" onchange="updateOpacity()"></label>
+				<label>Overlay opacity <input id="opacity-value" type="range" min="0" max="100" value="50" oninput="applyOpacityBlend()"></label>
 			</div>
 			
 			<div class="info-text" id="viewer-info"></div>
+		</div>
+		
+		<div id="lightbox" onclick="closeLightbox()" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 1000; cursor: zoom-out;">
+			<img id="lightbox-img" src="" alt="" style="max-width: 90vw; max-height: 90vh; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); border-radius: 4px;">
+			<div id="lightbox-label" style="position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); color: white; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.05em;"></div>
 		</div>
 		
 		<div class="attribution">
@@ -767,6 +775,7 @@ def build_single_page_app(
 		let currentSite = null;
 		let currentMode = 'opacity';
 		let timelapseTimer = null;
+		let tlActive = 'a';
 		
 		function init() {{
 			const select = document.getElementById('site-select');
@@ -782,7 +791,9 @@ def build_single_page_app(
 			currentSite = document.getElementById('site-select').value;
 			if (currentSite) {{
 				populateYears();
-				updateComparison();
+				if (currentMode === 'grid') buildGrid();
+				else if (currentMode === 'timelapse') initTimelapse();
+				else updateOpacity();
 			}}
 		}}
 		
@@ -809,15 +820,16 @@ def build_single_page_app(
 			pauseTimelapse();
 			document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
 			document.querySelector(`[data-mode="${{m}}"]`).classList.add('active');
+			document.getElementById('viewer-wrapper').style.display = m === 'grid' ? 'none' : '';
 			document.getElementById('opacity-mode').style.display = m === 'opacity' ? 'block' : 'none';
-			document.getElementById('grid-mode').style.display = m === 'grid' ? 'block' : 'none';
-			document.getElementById('timelapse-img').style.display = m === 'timelapse' ? 'block' : 'none';
+			document.getElementById('timelapse-mode').style.display = m === 'timelapse' ? 'block' : 'none';
+			document.getElementById('grid-mode').style.display = m === 'grid' ? 'grid' : 'none';
 			document.getElementById('opacity-controls').style.display = m === 'opacity' ? 'grid' : 'none';
 			document.getElementById('year-selection').style.display = m === 'opacity' ? 'block' : 'none';
 			document.getElementById('timelapse-controls').style.display = m === 'timelapse' ? 'block' : 'none';
 			if (m === 'grid') buildGrid();
 			else if (m === 'timelapse') initTimelapse();
-			else if (m === 'opacity') updateOpacity();
+			else updateOpacity();
 		}}
 		
 		function getImg(year) {{
@@ -829,6 +841,7 @@ def build_single_page_app(
 			if (currentMode === 'opacity') updateOpacity();
 		}}
 		
+		// Opacity mode
 		function updateOpacity() {{
 			const start = Number(document.getElementById('year-start').value);
 			const end = Number(document.getElementById('year-end').value);
@@ -836,45 +849,89 @@ def build_single_page_app(
 			if (b && a) {{
 				document.getElementById('opacity-base-img').src = b.path;
 				document.getElementById('opacity-overlay-img').src = a.path;
+				applyOpacityBlend();
 				document.getElementById('viewer-info').textContent = `Base: ${{start}} | Overlay: ${{end}}`;
 			}}
 		}}
 		
+		function applyOpacityBlend() {{
+			const v = Number(document.getElementById('opacity-value').value) / 100;
+			document.getElementById('opacity-overlay-img').style.opacity = v;
+		}}
+		
+		// Grid mode
 		function buildGrid() {{
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
-			const html = imgs.map(i => `<div class="grid-item"><img src="${{i.path}}" class="grid-img"><div class="grid-label">${{i.year}}</div></div>`).join('');
-			document.getElementById('grid-mode').innerHTML = html;
+			const frag = document.createDocumentFragment();
+			imgs.forEach(i => {{
+				const div = document.createElement('div');
+				div.className = 'grid-item';
+				div.innerHTML = `<img src="${{i.path}}" class="grid-img" loading="lazy"><div class="grid-label">${{i.year}}</div>`;
+				div.addEventListener('click', () => openLightbox(i.path, i.year));
+				frag.appendChild(div);
+			}});
+			const grid = document.getElementById('grid-mode');
+			grid.innerHTML = '';
+			grid.appendChild(frag);
 		}}
 		
+		function openLightbox(path, year) {{
+			document.getElementById('lightbox-img').src = path;
+			document.getElementById('lightbox-label').textContent = year;
+			document.getElementById('lightbox').style.display = 'block';
+		}}
+		
+		function closeLightbox() {{
+			document.getElementById('lightbox').style.display = 'none';
+		}}
+		
+		// Timelapse mode
 		function initTimelapse() {{
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
-			document.getElementById('timelapse-year').max = imgs.length - 1;
-			updateTimelapse();
+			const slider = document.getElementById('timelapse-year');
+			slider.max = imgs.length - 1;
+			slider.value = 0;
+			tlActive = 'a';
+			const imgA = document.getElementById('tl-img-a');
+			const imgB = document.getElementById('tl-img-b');
+			imgA.src = imgs[0].path;
+			imgA.style.opacity = 1;
+			imgB.src = '';
+			imgB.style.opacity = 0;
+			document.getElementById('tlabel').textContent = imgs[0].year;
+			document.getElementById('viewer-info').textContent = imgs[0].year;
 		}}
 		
 		function updateTimelapse() {{
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
 			const idx = Number(document.getElementById('timelapse-year').value);
-			const i = imgs[idx];
-			if (i) {{
-				document.getElementById('timelapse-img').src = i.path;
-				document.getElementById('tlabel').textContent = i.year;
-				document.getElementById('viewer-info').textContent = `${{i.year}} — ${{i.service}}`;
-			}}
+			const img = imgs[idx];
+			if (!img) return;
+			const next = tlActive === 'a' ? 'b' : 'a';
+			const nextEl = document.getElementById(`tl-img-${{next}}`);
+			const curEl = document.getElementById(`tl-img-${{tlActive}}`);
+			nextEl.src = img.path;
+			requestAnimationFrame(() => {{
+				nextEl.style.opacity = 1;
+				curEl.style.opacity = 0;
+			}});
+			tlActive = next;
+			document.getElementById('tlabel').textContent = img.year;
+			document.getElementById('viewer-info').textContent = img.year;
 		}}
 		
 		function playTimelapse() {{
-			if (timelapseTimer) return;
+			if (timelapseTimer || !currentSite) return;
 			const imgs = imageData[currentSite].images;
 			let idx = Number(document.getElementById('timelapse-year').value);
 			timelapseTimer = setInterval(() => {{
 				idx = (idx + 1) % imgs.length;
 				document.getElementById('timelapse-year').value = idx;
 				updateTimelapse();
-			}}, 1200);
+			}}, 900);
 		}}
 		
 		function pauseTimelapse() {{
@@ -883,6 +940,17 @@ def build_single_page_app(
 				timelapseTimer = null;
 			}}
 		}}
+		
+		document.addEventListener('keydown', e => {{
+			if (e.key === 'Escape') closeLightbox();
+			if (currentMode === 'timelapse' && currentSite) {{
+				const imgs = imageData[currentSite].images;
+				const slider = document.getElementById('timelapse-year');
+				let idx = Number(slider.value);
+				if (e.key === 'ArrowRight') {{ idx = Math.min(idx + 1, imgs.length - 1); slider.value = idx; updateTimelapse(); }}
+				if (e.key === 'ArrowLeft') {{ idx = Math.max(idx - 1, 0); slider.value = idx; updateTimelapse(); }}
+			}}
+		}});
 		
 		init();
 	</script>
