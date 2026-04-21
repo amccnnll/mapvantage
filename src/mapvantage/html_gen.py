@@ -255,7 +255,7 @@ def build_site_index(site_title: str, description: str, output_path: Path) -> Pa
 	<div class=\"shell\">
 		<div class=\"topbar\">
 			<a class=\"crumb\" href=\"../index.html\">Project Index</a>
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
+
 		</div>
 		<section class=\"hero\">
 			<h1>{escape(site_title)}</h1>
@@ -295,7 +295,7 @@ def build_slider_page(site_title: str, images: list[ImageAsset], output_path: Pa
 	<div class=\"shell\">
 		<div class=\"topbar\">
 			<a class=\"crumb\" href=\"index.html\">Back to Site</a>
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
+
 		</div>
 		<section class=\"hero\">
 			<h1>{escape(site_title)} Slider</h1>
@@ -358,7 +358,7 @@ def build_opacity_page(site_title: str, images: list[ImageAsset], output_path: P
 	<div class=\"shell\">
 		<div class=\"topbar\">
 			<a class=\"crumb\" href=\"index.html\">Back to Site</a>
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
+
 		</div>
 		<section class=\"hero\">
 			<h1>{escape(site_title)} Opacity Blend</h1>
@@ -420,7 +420,7 @@ def build_grid_page(site_title: str, images: list[ImageAsset], output_path: Path
 	<div class=\"shell\">
 		<div class=\"topbar\">
 			<a class=\"crumb\" href=\"index.html\">Back to Site</a>
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
+
 		</div>
 		<section class=\"hero\">
 			<h1>{escape(site_title)} Grid View</h1>
@@ -449,7 +449,7 @@ def build_timelapse_page(site_title: str, images: list[ImageAsset], output_path:
 	<div class=\"shell\">
 		<div class=\"topbar\">
 			<a class=\"crumb\" href=\"index.html\">Back to Site</a>
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
+
 		</div>
 		<section class=\"hero\">
 			<h1>{escape(site_title)} Timelapse</h1>
@@ -532,9 +532,7 @@ def build_project_index(project_title: str, sites: list[dict[str, str]], output_
 </head>
 <body>
 	<div class=\"shell\">
-		<div class=\"topbar\">
-			<a class=\"crumb\" href=\"../../../index.html\">GitHub Pages Home</a>
-		</div>
+
 		<section class=\"hero\">
 			<h1>{escape(project_title)}</h1>
 			<p>Site-level comparison pages generated from current fetch outputs.</p>
