@@ -1,3 +1,3 @@
-# Saltmarshes Python Project
+# MapVantage
 
-A little saltmarsh time series project
+A tool for time series analysis of geographic features form historical aerial/satellite imagery.
