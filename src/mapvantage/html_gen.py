@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Iterable
 
+from PIL import Image
+
 
 @dataclass
 class ImageAsset:
@@ -600,9 +602,46 @@ def collect_images_by_site(images_dir: Path, project_name: str) -> dict[str, lis
     return sites
 
 
-def _generate_image_data(sites: dict[str, list[ImageAsset]], base_dir: Path) -> str:
+def _build_timelapse_derivatives(
+	sites: dict[str, list[ImageAsset]],
+	page_dir: Path,
+	max_width: int = 1280,
+	quality: int = 72,
+) -> dict[Path, str]:
+	"""Create lighter JPEG derivatives for timelapse playback."""
+	derivatives: dict[Path, str] = {}
+	output_dir = page_dir / "images" / "timelapse"
+	output_dir.mkdir(parents=True, exist_ok=True)
+
+	for site_images in sites.values():
+		for img in site_images:
+			source = img.path.resolve()
+			target = output_dir / f"{img.path.stem}__tl.jpg"
+
+			rebuild = not target.exists() or target.stat().st_mtime < img.path.stat().st_mtime
+			if rebuild:
+				with Image.open(img.path) as source_image:
+					source_image = source_image.convert("RGB")
+					width, height = source_image.size
+					if width > max_width:
+						scaled_height = max(1, round(height * (max_width / width)))
+						source_image = source_image.resize((max_width, scaled_height), Image.Resampling.LANCZOS)
+					source_image.save(target, format="JPEG", quality=quality, optimize=True, progressive=True)
+
+			rel = Path(target.relative_to(page_dir)).as_posix()
+			derivatives[source] = rel
+
+	return derivatives
+
+
+def _generate_image_data(
+	sites: dict[str, list[ImageAsset]],
+	base_dir: Path,
+	timelapse_derivatives: dict[Path, str] | None = None,
+) -> str:
     """Generate JSON data for all images."""
     data: dict[str, dict[str, list]] = {}
+	tl_derivatives = timelapse_derivatives or {}
 
     for site_slug, images in sites.items():
         site_key = site_slug.title()  # Display name
@@ -611,10 +650,12 @@ def _generate_image_data(sites: dict[str, list[ImageAsset]], base_dir: Path) -> 
         for img in images:
             rel_path = str(img.path.relative_to(
                 base_dir, walk_up=True)).replace("\\", "/")
+			timelapse_path = tl_derivatives.get(img.path.resolve(), rel_path)
             data[site_key]["images"].append({
                 "year": img.year,
                 "service": img.service,
                 "path": rel_path,
+				"timelapse_path": timelapse_path,
                 "site": site_slug,
             })
 
@@ -635,8 +676,10 @@ def build_single_page_app(
     if not sites:
         raise ValueError(f"No images found in {images_dir}")
 
-    # Generate image data as JSON
-    image_data = _generate_image_data(sites, output_path.parent)
+	timelapse_derivatives = _build_timelapse_derivatives(sites, output_path.parent)
+
+	# Generate image data as JSON
+	image_data = _generate_image_data(sites, output_path.parent, timelapse_derivatives)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -848,6 +891,10 @@ def build_single_page_app(
 		function updateComparison() {{
 			if (currentMode === 'opacity') updateOpacity();
 		}}
+
+		function timelapsePath(img) {{
+			return img.timelapse_path || img.path;
+		}}
 		
 		// Opacity mode
 		function updateOpacity() {{
@@ -914,7 +961,7 @@ def build_single_page_app(
 			imgA.style.opacity = 1;
 			imgB.style.opacity = 0;
 			imgB.src = '';
-			imgA.src = imgs[0].path;
+			imgA.src = timelapsePath(imgs[0]);
 			document.getElementById('tlabel').textContent = imgs[0].year;
 			document.getElementById('viewer-info').textContent = imgs[0].year;
 			document.getElementById('tl-speed').oninput = function() {{
@@ -964,7 +1011,7 @@ def build_single_page_app(
 			}};
 			nextEl.onload = null;
 			nextEl.onerror = null;
-			nextEl.src = img.path;
+			nextEl.src = timelapsePath(img);
 			if (nextEl.decode) {{
 				nextEl.decode().then(startFade).catch(startFade);
 			}} else if (nextEl.complete) {{
