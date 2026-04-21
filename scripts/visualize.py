@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Generate single-page interactive visualization for all project imagery."""
 
+from mapvantage.config import load_project_config
+from mapvantage.html_gen import build_single_page_app
 import sys
 from pathlib import Path
 import argparse
@@ -10,9 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
-
-from mapvantage.html_gen import build_single_page_app
-from mapvantage.config import load_project_config
 
 
 def parse_args() -> argparse.Namespace:
@@ -31,7 +30,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     """Generate visualization pages."""
     args = parse_args()
-    
+
     # Group configs by project directory
     projects: dict[Path, list[Path]] = {}
     for config_arg in args.config:
@@ -40,7 +39,7 @@ def main() -> int:
         if project_dir not in projects:
             projects[project_dir] = []
         projects[project_dir].append(config_path)
-    
+
     # Generate pages for each project
     root_projects = []
     for project_dir, config_paths in projects.items():
@@ -48,15 +47,15 @@ def main() -> int:
         first_cfg = load_project_config(config_paths[0])
         project_name = first_cfg.project_name
         output_dir = project_dir / first_cfg.output_dir
-        
+
         if not output_dir.exists() or not any(output_dir.glob("*.png")):
             print(f"⚠ No images found for {project_name} in {output_dir}")
             continue
-        
+
         # Generate single-page app
         page_title = project_name.replace("_", " ").title()
         output_path = project_dir / "web" / "index.html"
-        
+
         try:
             build_single_page_app(
                 project_title=page_title,
@@ -65,7 +64,7 @@ def main() -> int:
                 output_path=output_path,
             )
             print(f"✓ Generated: {output_path.relative_to(ROOT)}")
-            
+
             root_projects.append({
                 "title": page_title,
                 "href": str(output_path.relative_to(ROOT)).replace("\\", "/"),
@@ -73,7 +72,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Failed to generate {project_name}: {e}")
             return 1
-    
+
     # Generate root index
     if root_projects:
         root_index_html = """<!DOCTYPE html>
@@ -115,7 +114,7 @@ def main() -> int:
 		</section>
 		<div class="grid">
 """
-        
+
         for project in root_projects:
             root_index_html += f"""			<a href="{project['href']}" class="card">
 				<h2>{project['title']}</h2>
@@ -123,16 +122,16 @@ def main() -> int:
 				<span class="button">Open →</span>
 			</a>
 """
-        
+
         root_index_html += """		</div>
 	</div>
 </body>
 </html>"""
-        
+
         root_path = ROOT / "index.html"
         root_path.write_text(root_index_html, encoding="utf-8")
         print(f"✓ Generated: index.html (root)")
-    
+
     return 0
 
 

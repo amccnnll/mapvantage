@@ -586,7 +586,7 @@ def collect_images_by_site(images_dir: Path, project_name: str) -> dict[str, lis
     """Collect images and organize by bbox_label (site)."""
     project_token = slugify(project_name)
     sites: dict[str, list[ImageAsset]] = {}
-    
+
     for image_path in sorted(images_dir.glob("*.png")):
         if not image_path.name.startswith(f"{project_token}__"):
             continue
@@ -595,22 +595,22 @@ def collect_images_by_site(images_dir: Path, project_name: str) -> dict[str, lis
             if asset.bbox_label not in sites:
                 sites[asset.bbox_label] = []
             sites[asset.bbox_label].append(asset)
-    
+
     # Sort by year within each site
     for site_images in sites.values():
         site_images.sort(key=lambda item: item.year)
-    
+
     return sites
 
 
 def _generate_image_data(sites: dict[str, list[ImageAsset]], base_dir: Path) -> str:
     """Generate JSON data for all images."""
     data: dict[str, dict[str, list]] = {}
-    
+
     for site_slug, images in sites.items():
         site_key = site_slug.title()  # Display name
         data[site_key] = {"images": []}
-        
+
         for img in images:
             rel_path = str(img.path.relative_to(base_dir)).replace("\\", "/")
             data[site_key]["images"].append({
@@ -619,7 +619,7 @@ def _generate_image_data(sites: dict[str, list[ImageAsset]], base_dir: Path) -> 
                 "path": rel_path,
                 "site": site_slug,
             })
-    
+
     return json.dumps(data)
 
 
@@ -630,16 +630,16 @@ def build_single_page_app(
     output_path: Path,
 ) -> Path:
     """Generate a single-page interactive app for comparing imagery."""
-    
+
     # Collect images organized by site
     sites = collect_images_by_site(images_dir, project_name)
-    
+
     if not sites:
         raise ValueError(f"No images found in {images_dir}")
-    
+
     # Generate image data as JSON
     image_data = _generate_image_data(sites, images_dir.parent)
-    
+
     html = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -923,5 +923,5 @@ def build_single_page_app(
 	</script>
 </body>
 </html>"""
-    
+
     return _write_html(output_path, html)
