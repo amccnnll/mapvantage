@@ -1,0 +1,24 @@
+project_name: cantabria_delta_santander
+
+api:
+  base_url: "https://geoservicios.cantabria.es/inspire/rest/services"
+  endpoint: "/MapServer/export"
+  default_layer_id: 0
+
+bbox:
+  label: "santander"
+  coords: "438207.351,4808859.947,441318.857,4811288.285"
+
+crs: "EPSG:25830"
+image_size: "1600x1200"
+output_dir: "data/images"
+
+years:
+  - year: 1956
+    service: "Ortofoto_56_57"
+  - year: 1980
+    service: "Ortofoto_80_90"
+  - year: 2000
+    service: "Ortofoto_2001"
+  - year: 2024
+    service: "Ortofoto_2024"

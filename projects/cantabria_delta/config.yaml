@@ -1,0 +1,24 @@
+project_name: cantabria_delta
+
+api:
+  base_url: "https://geoservicios.cantabria.es/inspire/rest/services"
+  endpoint: "/MapServer/export"
+  default_layer_id: 0
+
+bbox:
+  label: "escudo_delta_core"
+  coords: "378500,4799000,380500,4800500"
+
+crs: "EPSG:25830"
+image_size: "1600x1200"
+output_dir: "data/images"
+
+years:
+  - year: 1956
+    service: "Ortofoto_56_57"
+  - year: 1980
+    service: "Ortofoto_80_90"
+  - year: 2000
+    service: "Ortofoto_2001"
+  - year: 2024
+    service: "Ortofoto_2024"
