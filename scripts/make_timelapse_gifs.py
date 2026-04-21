@@ -2,6 +2,7 @@
 """Create local per-site GIF timelapses with smooth crossfade transitions."""
 
 from __future__ import annotations
+from geogander.config import load_project_config
 
 import argparse
 import math
@@ -18,8 +19,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
-
-from geogander.config import load_project_config
 
 
 @dataclass
@@ -90,7 +89,8 @@ def _build_frames(
     max_width: int,
 ) -> tuple[list[Image.Image], list[int]]:
     if len(assets) < 2:
-        raise ValueError("Need at least 2 yearly images to build a timelapse GIF.")
+        raise ValueError(
+            "Need at least 2 yearly images to build a timelapse GIF.")
 
     first = _load_rgb(assets[0].path)
     if first.width > max_width:
@@ -142,7 +142,8 @@ def _prepare_gif_palette_frames(frames: list[Image.Image], colors: int) -> list[
         raise ValueError("--colors must be in range [2, 256]")
 
     return [
-        frame.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.FLOYDSTEINBERG)
+        frame.quantize(colors=colors, method=Image.Quantize.MEDIANCUT,
+                       dither=Image.Dither.FLOYDSTEINBERG)
         for frame in frames
     ]
 
@@ -216,16 +217,19 @@ def main() -> int:
         projects.setdefault(config_path.parent, []).append(config_path)
 
     for project_dir, config_paths in projects.items():
-        images_dir = project_dir / _resolve_output_dir_from_config(config_paths[0])
+        images_dir = project_dir / \
+            _resolve_output_dir_from_config(config_paths[0])
         output_dir = project_dir / args.output_dir
 
         if not images_dir.exists():
-            print(f"Skipping {project_dir.name}: images dir not found at {images_dir}")
+            print(
+                f"Skipping {project_dir.name}: images dir not found at {images_dir}")
             continue
 
         sites = _collect_site_assets(images_dir)
         if not sites:
-            print(f"Skipping {project_dir.name}: no matching PNG assets found in {images_dir}")
+            print(
+                f"Skipping {project_dir.name}: no matching PNG assets found in {images_dir}")
             continue
 
         print(f"\nProject: {project_dir.name}")
@@ -244,7 +248,8 @@ def main() -> int:
                 hold_ms=args.hold_ms,
                 max_width=args.max_width,
             )
-            palette_frames = _prepare_gif_palette_frames(frames, colors=args.colors)
+            palette_frames = _prepare_gif_palette_frames(
+                frames, colors=args.colors)
 
             years = f"{assets[0].year}-{assets[-1].year}"
             output_name = f"{_slug(project_dir.name)}__{_slug(site)}__{years}.gif"
