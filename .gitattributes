@@ -1,0 +1,4 @@
+# Tell GitHub Linguist to ignore generated HTML (web output)
+projects/*/web/**  linguist-generated=true
+index.html         linguist-generated=true
+docs/**            linguist-generated=true
