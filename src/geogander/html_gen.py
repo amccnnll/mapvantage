@@ -624,9 +624,12 @@ def _build_timelapse_derivatives(
                     source_image = source_image.convert("RGB")
                     width, height = source_image.size
                     if width > max_width:
-                        scaled_height = max(1, round(height * (max_width / width)))
-                        source_image = source_image.resize((max_width, scaled_height), Image.Resampling.LANCZOS)
-                    source_image.save(target, format="JPEG", quality=quality, optimize=True, progressive=True)
+                        scaled_height = max(
+                            1, round(height * (max_width / width)))
+                        source_image = source_image.resize(
+                            (max_width, scaled_height), Image.Resampling.LANCZOS)
+                    source_image.save(
+                        target, format="JPEG", quality=quality, optimize=True, progressive=True)
 
             rel = Path(target.relative_to(page_dir)).as_posix()
             derivatives[source] = rel
@@ -676,10 +679,12 @@ def build_single_page_app(
     if not sites:
         raise ValueError(f"No images found in {images_dir}")
 
-    timelapse_derivatives = _build_timelapse_derivatives(sites, output_path.parent)
+    timelapse_derivatives = _build_timelapse_derivatives(
+        sites, output_path.parent)
 
     # Generate image data as JSON
-    image_data = _generate_image_data(sites, output_path.parent, timelapse_derivatives)
+    image_data = _generate_image_data(
+        sites, output_path.parent, timelapse_derivatives)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
