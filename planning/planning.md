@@ -1,8 +1,8 @@
-# MapVantage Project Plan - Phase 1: MVP
+# Geogander Project Plan - Phase 1: MVP
 
 ## Overview
 
-MapVantage is a tool for creating interactive web-based visual comparisons of historical imagery. Start with the absolute basics:
+Geogander is a tool for creating interactive web-based visual comparisons of historical imagery. Start with the absolute basics:
 
 1. **Fetch imagery** from mapping APIs (SITCAN, etc.)
 2. **Create web visualization tools** for easy visual comparison (sliders, opacity blends, grids, timelapses)
@@ -12,11 +12,11 @@ That's it. Everything else is a wishlist.
 ## Progress Tracker
 
 - [x] Phase 1 complete: legacy archive and minimal project structure
-- [x] Phase 2 complete: working API fetcher in `src/mapvantage/fetcher.py`
+- [x] Phase 2 complete: working API fetcher in `src/geogander/fetcher.py`
 - [x] Phase 4.1 complete: `scripts/fetch.py` reads project YAML and downloads imagery
 - [x] Fetch validation complete: real run saved `1956.png`, `1980.png`, `2000.png`, `2024.png`
 - [x] Fetch output naming improved: filenames now include project/service/layer/CRS/bbox/size metadata
-- [x] Phase 3 complete: HTML comparison generators implemented in `src/mapvantage/html_gen.py`
+- [x] Phase 3 complete: HTML comparison generators implemented in `src/geogander/html_gen.py`
 - [x] Phase 4.2 complete: `scripts/visualize.py` generates static comparison pages and indexes
 - [x] Phase 5 complete: working comparison pages generated in `projects/cantabria_delta/web/`
 
@@ -37,9 +37,9 @@ Move all legacy code to `legacy/saltmarsh/`:
 ### 1.2 Minimal Project Structure
 
 ```
-mapvantage/
+geogander/
 ├── src/
-│   └── mapvantage/
+│   └── geogander/
 │       ├── __init__.py
 │       ├── fetcher.py              (fetch imagery from API)
 │       ├── html_gen.py             (generate HTML comparison tools)
@@ -66,7 +66,7 @@ mapvantage/
 
 Simple tool to download imagery from APIs.
 
-**File:** `src/mapvantage/fetcher.py`
+**File:** `src/geogander/fetcher.py`
 
 **Key Function:**
 
@@ -85,7 +85,7 @@ def fetch_imagery(api_url, bbox, year, output_path):
 
 Create interactive HTML comparison tools.
 
-**File:** `src/mapvantage/html_gen.py`
+**File:** `src/geogander/html_gen.py`
 
 **Key Functions:**
 

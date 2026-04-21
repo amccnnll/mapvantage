@@ -1,1 +1,0 @@
-# MapVantage package

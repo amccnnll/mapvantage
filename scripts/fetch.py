@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from mapvantage.fetcher import build_export_url, fetch_imagery
-from mapvantage.config import load_project_config
+from geogander.fetcher import build_export_url, fetch_imagery
+from geogander.config import load_project_config
 import argparse
 import sys
 import re

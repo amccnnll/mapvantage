@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Generate single-page interactive visualization for all project imagery."""
 
-from mapvantage.config import load_project_config
-from mapvantage.html_gen import build_single_page_app
 import sys
 from pathlib import Path
 import argparse
@@ -12,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
+
+from geogander.config import load_project_config
+from geogander.html_gen import build_single_page_app
 
 
 def parse_args() -> argparse.Namespace:
@@ -80,7 +81,7 @@ def main() -> int:
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>MapVantage</title>
+    <title>Geogander</title>
 	<style>
 		* { box-sizing: border-box; }
 		body {
@@ -109,7 +110,7 @@ def main() -> int:
 <body>
 	<div class="shell">
 		<section class="hero">
-			<h1>MapVantage</h1>
+            <h1>Geogander</h1>
 			<p>Interactive tool for comparing historical orthophoto imagery. Select a project below to begin exploring.</p>
 		</section>
 		<div class="grid">

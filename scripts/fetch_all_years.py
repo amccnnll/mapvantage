@@ -6,8 +6,8 @@ from pathlib import Path
 repo_root = Path(__file__).parent.parent
 sys.path.insert(0, str(repo_root))
 
-from mapvantage.config import load_project_config
-from mapvantage.fetcher import fetch_imagery
+from geogander.config import load_project_config
+from geogander.fetcher import fetch_imagery
 
 AVAILABLE_YEARS = [
     (1946, "Ortofoto_45_46"),

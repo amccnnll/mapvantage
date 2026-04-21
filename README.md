@@ -1,4 +1,4 @@
-# MapVantage
+# Geogander
 
 ![Santander orthophoto example](./projects/cantabria_delta/web/images/historical_img_example_santander.png)
 
@@ -10,7 +10,7 @@ There are _much_ better tools out there for this task, but this does what I need
 
 Interactive visualisations:
 
-- [Cantabria Delta (Oyambre & Santander)](https://amccnnll.github.io/mapvantage/projects/cantabria_delta/web/index.html)
+- [Cantabria Delta (Oyambre & Santander)](https://amccnnll.github.io/geogander/projects/cantabria_delta/web/index.html)
 
 ## Sources
 

@@ -247,7 +247,7 @@ def build_site_index(site_title: str, description: str, output_path: Path) -> Pa
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(site_title)} | MapVantage</title>
+	<title>{escape(site_title)} | Geogander</title>
 	<style>{_base_styles()}</style>
 </head>
 <body>
@@ -282,7 +282,7 @@ def build_slider_page(site_title: str, images: list[ImageAsset], output_path: Pa
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(site_title)} Slider | MapVantage</title>
+	<title>{escape(site_title)} Slider | Geogander</title>
 	<style>
 		{_base_styles()}
 		.slider-overlay {{ position: absolute; inset: 0; overflow: hidden; }}
@@ -347,7 +347,7 @@ def build_opacity_page(site_title: str, images: list[ImageAsset], output_path: P
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(site_title)} Opacity | MapVantage</title>
+	<title>{escape(site_title)} Opacity | Geogander</title>
 	<style>
 		{_base_styles()}
 		.stack img {{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }}
@@ -412,7 +412,7 @@ def build_grid_page(site_title: str, images: list[ImageAsset], output_path: Path
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(site_title)} Grid | MapVantage</title>
+	<title>{escape(site_title)} Grid | Geogander</title>
 	<style>{_base_styles()}</style>
 </head>
 <body>
@@ -441,7 +441,7 @@ def build_timelapse_page(site_title: str, images: list[ImageAsset], output_path:
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(site_title)} Timelapse | MapVantage</title>
+	<title>{escape(site_title)} Timelapse | Geogander</title>
 	<style>{_base_styles()}</style>
 </head>
 <body>
@@ -526,7 +526,7 @@ def build_project_index(project_title: str, sites: list[dict[str, str]], output_
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>{escape(project_title)} | MapVantage</title>
+	<title>{escape(project_title)} | Geogander</title>
 	<style>{_base_styles()}</style>
 </head>
 <body>
@@ -565,13 +565,13 @@ def build_root_index(projects: list[dict[str, str]], output_path: Path) -> Path:
 <head>
 	<meta charset=\"utf-8\">
 	<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-	<title>MapVantage</title>
+	<title>Geogander</title>
 	<style>{_base_styles()}</style>
 </head>
 <body>
 	<div class=\"shell\">
 		<section class=\"hero\">
-			<h1>MapVantage</h1>
+			<h1>Geogander</h1>
 			<p>Interactive visual comparison pages for fetched historical imagery. This root index is intended to work when GitHub Pages is published from the <code>main</code> branch root.</p>
 		</section>
 		<section class=\"grid\">{''.join(links)}</section>
@@ -643,7 +643,7 @@ def build_single_page_app(
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{escape(project_title)} | MapVantage</title>
+	<title>{escape(project_title)} | Geogander</title>
 	<style>
 		:root {{
 			--paper: #ffffff;
@@ -772,7 +772,7 @@ def build_single_page_app(
 			Orthophoto imagery © Cantabria Government via <a href="https://geoservicios.cantabria.es/" target="_blank">GeoServicios Cantabria</a><br>
 			Licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Creative Commons Attribution 4.0 International (CC-BY-4.0)</a><br>
 			<br>
-			<strong>MapVantage</strong> — Interactive tool for historical imagery comparison
+			<strong>Geogander</strong> — Interactive tool for historical imagery comparison
 		</div>
 	</div>
 	
