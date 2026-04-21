@@ -727,11 +727,16 @@ def build_single_page_app(
 			</div>
 			
 			<div id="timelapse-controls" style="display: none;" class="control-group">
-				<label class="control-label">Year: <span id="tlabel">1946</span></label>
-				<input id="timelapse-year" type="range" min="0" max="10" value="0" class="control-input" onchange="updateTimelapse()" style="cursor: pointer;">
+				<label class="control-label">Year: <span id="tlabel">—</span></label>
+				<input id="timelapse-year" type="range" min="0" max="10" value="0" class="control-input" oninput="stepTimelapse(Number(this.value))" style="cursor: pointer;">
 				<div class="button-row" style="margin-top: 12px;">
-					<button class="button" onclick="playTimelapse()">Play</button>
+					<button class="button secondary" onclick="stepTimelapse(tlIdx - 1)">&#8592; Prev</button>
+					<button class="button" onclick="playTimelapse()" id="btn-play">Play</button>
 					<button class="button secondary" onclick="pauseTimelapse()">Pause</button>
+					<button class="button secondary" onclick="stepTimelapse(tlIdx + 1)">Next &#8594;</button>
+				</div>
+				<div style="margin-top: 12px;">
+					<label class="control-label">Speed <input id="tl-speed" type="range" min="400" max="3000" value="1500" step="100" class="control-input" style="cursor: pointer;"> <span id="tl-speed-label">1.5 s/frame</span></label>
 				</div>
 			</div>
 		</div>
@@ -887,37 +892,53 @@ def build_single_page_app(
 		}}
 		
 		// Timelapse mode
+		let tlIdx = 0;
+		
 		function initTimelapse() {{
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
 			const slider = document.getElementById('timelapse-year');
 			slider.max = imgs.length - 1;
 			slider.value = 0;
+			tlIdx = 0;
 			tlActive = 'a';
 			const imgA = document.getElementById('tl-img-a');
 			const imgB = document.getElementById('tl-img-b');
-			imgA.src = imgs[0].path;
+			imgA.style.transition = 'none';
 			imgA.style.opacity = 1;
-			imgB.src = '';
 			imgB.style.opacity = 0;
+			imgB.src = '';
+			imgA.src = imgs[0].path;
 			document.getElementById('tlabel').textContent = imgs[0].year;
 			document.getElementById('viewer-info').textContent = imgs[0].year;
+			document.getElementById('tl-speed').oninput = function() {{
+				document.getElementById('tl-speed-label').textContent = (this.value / 1000).toFixed(1) + ' s/frame';
+				if (timelapseTimer) {{ pauseTimelapse(); playTimelapse(); }}
+			}};
 		}}
 		
-		function updateTimelapse() {{
+		function stepTimelapse(idx) {{
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
-			const idx = Number(document.getElementById('timelapse-year').value);
+			idx = Math.max(0, Math.min(idx, imgs.length - 1));
+			if (idx === tlIdx) return;
+			tlIdx = idx;
+			document.getElementById('timelapse-year').value = idx;
 			const img = imgs[idx];
-			if (!img) return;
 			const next = tlActive === 'a' ? 'b' : 'a';
 			const nextEl = document.getElementById(`tl-img-${{next}}`);
-			const curEl = document.getElementById(`tl-img-${{tlActive}}`);
+			const curEl  = document.getElementById(`tl-img-${{tlActive}}`);
+			nextEl.style.transition = 'none';
+			nextEl.style.opacity = 0;
+			nextEl.onload = () => {{
+				requestAnimationFrame(() => {{
+					nextEl.style.transition = 'opacity 0.4s ease';
+					curEl.style.transition  = 'opacity 0.4s ease';
+					nextEl.style.opacity = 1;
+					curEl.style.opacity  = 0;
+				}});
+			}};
 			nextEl.src = img.path;
-			requestAnimationFrame(() => {{
-				nextEl.style.opacity = 1;
-				curEl.style.opacity = 0;
-			}});
 			tlActive = next;
 			document.getElementById('tlabel').textContent = img.year;
 			document.getElementById('viewer-info').textContent = img.year;
@@ -926,12 +947,10 @@ def build_single_page_app(
 		function playTimelapse() {{
 			if (timelapseTimer || !currentSite) return;
 			const imgs = imageData[currentSite].images;
-			let idx = Number(document.getElementById('timelapse-year').value);
+			const speed = Number(document.getElementById('tl-speed').value);
 			timelapseTimer = setInterval(() => {{
-				idx = (idx + 1) % imgs.length;
-				document.getElementById('timelapse-year').value = idx;
-				updateTimelapse();
-			}}, 900);
+				stepTimelapse((tlIdx + 1) % imgs.length);
+			}}, speed);
 		}}
 		
 		function pauseTimelapse() {{
@@ -948,7 +967,8 @@ def build_single_page_app(
 				const slider = document.getElementById('timelapse-year');
 				let idx = Number(slider.value);
 				if (e.key === 'ArrowRight') {{ idx = Math.min(idx + 1, imgs.length - 1); slider.value = idx; updateTimelapse(); }}
-				if (e.key === 'ArrowLeft') {{ idx = Math.max(idx - 1, 0); slider.value = idx; updateTimelapse(); }}
+			if (e.key === 'ArrowRight') stepTimelapse(tlIdx + 1);
+				if (e.key === 'ArrowLeft')  stepTimelapse(tlIdx - 1);
 			}}
 		}});
 		
