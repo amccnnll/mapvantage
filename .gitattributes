@@ -1,4 +1,7 @@
-# Tell GitHub Linguist to ignore generated HTML (web output)
-projects/*/web/**  linguist-generated=true
-index.html         linguist-generated=true
-docs/**            linguist-generated=true
+# Tell GitHub Linguist to ignore HTML when calculating language stats.
+*.html linguist-detectable=false
+
+# Keep generated site outputs marked as generated as well.
+projects/*/web/** linguist-generated=true
+index.html linguist-generated=true
+docs/** linguist-generated=true
