@@ -20,6 +20,3 @@ __pycache__/
 # Environment
 .env
 .env.*
-
-# Project Data
-Data/
