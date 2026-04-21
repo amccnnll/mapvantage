@@ -584,12 +584,9 @@ def build_root_index(projects: list[dict[str, str]], output_path: Path) -> Path:
 
 def collect_images_by_site(images_dir: Path, project_name: str) -> dict[str, list[ImageAsset]]:
     """Collect images and organize by bbox_label (site)."""
-    project_token = slugify(project_name)
     sites: dict[str, list[ImageAsset]] = {}
 
     for image_path in sorted(images_dir.glob("*.png")):
-        if not image_path.name.startswith(f"{project_token}__"):
-            continue
         asset = parse_image_asset(image_path)
         if asset is not None:
             if asset.bbox_label not in sites:
@@ -612,7 +609,8 @@ def _generate_image_data(sites: dict[str, list[ImageAsset]], base_dir: Path) -> 
         data[site_key] = {"images": []}
 
         for img in images:
-            rel_path = str(img.path.relative_to(base_dir)).replace("\\", "/")
+            rel_path = str(img.path.relative_to(
+                base_dir, walk_up=True)).replace("\\", "/")
             data[site_key]["images"].append({
                 "year": img.year,
                 "service": img.service,
@@ -638,7 +636,7 @@ def build_single_page_app(
         raise ValueError(f"No images found in {images_dir}")
 
     # Generate image data as JSON
-    image_data = _generate_image_data(sites, images_dir.parent)
+    image_data = _generate_image_data(sites, output_path.parent)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
