@@ -142,6 +142,8 @@
 		let currentMode = 'opacity';
 		let timelapseTimer = null;
 		let tlActive = 'a';
+		let tlTransitioning = false;
+		let tlQueuedIdx = null;
 		
 		function init() {
 			const select = document.getElementById('site-select');
@@ -263,9 +265,12 @@
 			slider.value = 0;
 			tlIdx = 0;
 			tlActive = 'a';
+			tlTransitioning = false;
+			tlQueuedIdx = null;
 			const imgA = document.getElementById('tl-img-a');
 			const imgB = document.getElementById('tl-img-b');
 			imgA.style.transition = 'none';
+			imgB.style.transition = 'none';
 			imgA.style.opacity = 1;
 			imgB.style.opacity = 0;
 			imgB.src = '';
@@ -282,27 +287,52 @@
 			if (!currentSite) return;
 			const imgs = imageData[currentSite].images;
 			idx = Math.max(0, Math.min(idx, imgs.length - 1));
-			if (idx === tlIdx) return;
-			tlIdx = idx;
-			document.getElementById('timelapse-year').value = idx;
+			if (idx === tlIdx && !tlTransitioning) return;
+			if (tlTransitioning) {
+				tlQueuedIdx = idx;
+				return;
+			}
+			tlTransitioning = true;
 			const img = imgs[idx];
 			const next = tlActive === 'a' ? 'b' : 'a';
 			const nextEl = document.getElementById(`tl-img-${next}`);
 			const curEl  = document.getElementById(`tl-img-${tlActive}`);
 			nextEl.style.transition = 'none';
+			curEl.style.transition = 'none';
 			nextEl.style.opacity = 0;
-			nextEl.onload = () => {
+			const finishStep = () => {
+				tlActive = next;
+				tlIdx = idx;
+				document.getElementById('timelapse-year').value = idx;
+				document.getElementById('tlabel').textContent = img.year;
+				document.getElementById('viewer-info').textContent = img.year;
+				tlTransitioning = false;
+				if (tlQueuedIdx !== null) {
+					const queued = tlQueuedIdx;
+					tlQueuedIdx = null;
+					if (queued !== tlIdx) stepTimelapse(queued);
+				}
+			};
+			const startFade = () => {
 				requestAnimationFrame(() => {
 					nextEl.style.transition = 'opacity 0.4s ease';
 					curEl.style.transition  = 'opacity 0.4s ease';
 					nextEl.style.opacity = 1;
 					curEl.style.opacity  = 0;
+					curEl.addEventListener('transitionend', finishStep, { once: true });
 				});
 			};
+			nextEl.onload = null;
+			nextEl.onerror = null;
 			nextEl.src = img.path;
-			tlActive = next;
-			document.getElementById('tlabel').textContent = img.year;
-			document.getElementById('viewer-info').textContent = img.year;
+			if (nextEl.decode) {
+				nextEl.decode().then(startFade).catch(startFade);
+			} else if (nextEl.complete) {
+				startFade();
+			} else {
+				nextEl.onload = startFade;
+				nextEl.onerror = startFade;
+			}
 		}
 		
 		function playTimelapse() {
@@ -324,11 +354,7 @@
 		document.addEventListener('keydown', e => {
 			if (e.key === 'Escape') closeLightbox();
 			if (currentMode === 'timelapse' && currentSite) {
-				const imgs = imageData[currentSite].images;
-				const slider = document.getElementById('timelapse-year');
-				let idx = Number(slider.value);
-				if (e.key === 'ArrowRight') { idx = Math.min(idx + 1, imgs.length - 1); slider.value = idx; updateTimelapse(); }
-			if (e.key === 'ArrowRight') stepTimelapse(tlIdx + 1);
+				if (e.key === 'ArrowRight') stepTimelapse(tlIdx + 1);
 				if (e.key === 'ArrowLeft')  stepTimelapse(tlIdx - 1);
 			}
 		});
