@@ -1,0 +1,53 @@
+project_name: cantabria_delta
+
+api:
+  base_url: "https://geoservicios.cantabria.es/inspire/rest/services"
+  endpoint: "/MapServer/export"
+  default_layer_id: 0
+
+crs: "EPSG:25830"
+image_size: "1600x1200"
+output_dir: "data/images"
+
+sites:
+  oyambre:
+    label: "Oyambre"
+    bbox: "391468.764,4802445.188,394216.075,4804825.562"
+  
+  santander:
+    label: "Santander"
+    bbox: "438207.351,4808859.947,441318.857,4811288.285"
+
+years:
+  - year: 1946
+    service: "Ortofoto_45_46"
+  - year: 1957
+    service: "Ortofoto_56_57"
+  - year: 1980
+    service: "Ortofoto_80_90"
+  - year: 1986
+    service: "Ortofoto_77_86"
+  - year: 2001
+    service: "Ortofoto_2001"
+  - year: 2002
+    service: "Ortofoto_2002"
+  - year: 2005
+    service: "Ortofoto_2005"
+  - year: 2007
+    service: "Ortofoto_2007"
+  - year: 2010
+    service: "Ortofoto_2010"
+  - year: 2014
+    service: "Ortofoto_2014"
+  - year: 2017
+    service: "Ortofoto_2017"
+  - year: 2018
+    service: "Ortofoto_2018"
+  - year: 2020
+    service: "Ortofoto_2020"
+  - year: 2023
+    service: "Ortofoto_2023"
+  - year: 2024
+    service: "Ortofoto_2024"
+  - year: 2025
+    service: "Ortofoto_2025"
