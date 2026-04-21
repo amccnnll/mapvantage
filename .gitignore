@@ -20,3 +20,8 @@ __pycache__/
 # Environment
 .env
 .env.*
+
+# Generated local GIF exports
+projects/cantabria_delta/**/*.gif
+!projects/cantabria_delta/local_gifs_small_25mb/
+!projects/cantabria_delta/local_gifs_small_25mb/*.gif
