@@ -8,7 +8,7 @@ There are _much_ better tools out there for this task, but this does what I need
 
 ## View
 
-Interactive visualizations:
+Interactive visualisations:
 
 - [Cantabria Delta (Oyambre & Santander)](https://amccnnll.github.io/mapvantage/projects/cantabria_delta/web/index.html)
 
