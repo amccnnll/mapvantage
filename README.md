@@ -4,7 +4,7 @@
 
 A simple tool for time series analysis of geographic features from historical aerial/satellite imagery.
 
-There are _much_ better tools out there for this task, but this does what I need it to and I learnt a lot form making it.
+There are _much_ better tools out there for this task, but this does what I need it to and I learnt a lot form making it :)
 
 ## View
 
