@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# who needs comments anyway?
 
 from geogander.fetcher import build_export_url, fetch_imagery
 from geogander.config import load_project_config
