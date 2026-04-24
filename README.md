@@ -6,6 +6,8 @@ A simple tool for time series analysis of geographic features from historical ae
 
 There are _much_ better tools out there for this task, but this does what I need it to and I learnt a lot form making it :)
 
+Note: some of the image tiles fetched form the API are *large* - you might need to give everything a minute or two to load. I'll work on some sort of optimisation or pre-fetch in a future version... 
+
 ## View
 
 Interactive visualisations:
